@@ -18,3 +18,7 @@ htmlcov/
 
 # Env
 .env
+
+# Data (no versionar datasets)
+data/raw/
+data/processed/
