@@ -13,3 +13,7 @@ app.include_router(health_router, tags=["health"])
 app.include_router(schema_router, tags=["week2"])
 
 app.include_router(clean_router, tags=["clean"])
+
+@app.get("/")
+def root():
+    return {"message": "API running. Go to /docs"}
