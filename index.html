@@ -209,109 +209,18 @@
                         legend: { display: false }
                     },
                     scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: 'rgba(0,0,0,0.05)' }
-                        },
-                        x: {
-                            grid: { display: false }
-                        }
-                    }
-                }
-            });
-
-            pieChart = new Chart(ctxPie, {
-                type: 'doughnut',
-                data: {
-                    labels: data.map(d => `Comuna ${d.comuna}`),
-                    datasets: [{
-                        data: data.map(d => d.cantidad),
-                        backgroundColor: colors.slice(0, data.length),
-                        borderWidth: 2,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { padding: 20 }
-                        }
-                    }
+                        y: { beginAtZero: true }
+                    },
+                    plugins: { legend: { display: false } }
                 }
             });
         }
 
-        function renderTable(data) {
-            const tbody = document.getElementById('table-body');
-            const total = data.reduce((sum, item) => sum + item.cantidad, 0);
-
-            tbody.innerHTML = data.map(item => {
-                const percentage = ((item.cantidad / total) * 100).toFixed(1);
-                return `
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-3 font-medium">Comuna ${item.comuna}</td>
-                        <td class="px-4 py-3">${item.cantidad.toLocaleString()}</td>
-                        <td class="px-4 py-3">
-                            <div class="flex items-center gap-2">
-                                <div class="w-16 bg-gray-200 rounded-full h-2">
-                                    <div class="bg-pink-600 h-2 rounded-full" style="width: ${percentage}%"></div>
-                                </div>
-                                <span class="text-sm">${percentage}%</span>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function showError(message) {
-            // Crear un toast de error temporal
-            const toast = document.createElement('div');
-            toast.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
-            toast.innerText = message;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 5000);
-        }
-
-        // Event listeners
-        document.getElementById('refresh-all').addEventListener('click', () => {
-            checkApi();
+        document.getElementById('refresh-btn').addEventListener('click', () => {
             fetchData();
         });
 
-        document.getElementById('search-input').addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            const rows = document.querySelectorAll('#table-body tr');
-
-            rows.forEach(row => {
-                const text = row.innerText.toLowerCase();
-                row.style.display = text.includes(searchTerm) ? '' : 'none';
-            });
-        });
-
-        document.getElementById('export-btn').addEventListener('click', () => {
-            if (currentData.length === 0) {
-                showError('No hay datos para exportar');
-                return;
-            }
-
-            const csv = [
-                ['Comuna', 'Casos'],
-                ...currentData.map(d => [d.comuna, d.cantidad])
-            ].map(row => row.join(',')).join('\n');
-
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'datos-cancer-mama.csv';
-            a.click();
-            URL.revokeObjectURL(url);
-        });
-
-        // Inicialización
+        // inicialización
         checkApi();
         fetchData();
     </script>
