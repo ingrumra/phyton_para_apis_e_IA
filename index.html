@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Cáncer de Mama | Cali 2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        body {
+            background: linear-gradient(135deg, #fce4ec 0%, #f3e5f5 100%);
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto">
+        <header class="mb-10 text-center">
+            <h1 class="text-4xl font-bold text-pink-700 mb-2">Análisis de Cáncer de Mama</h1>
+            <p class="text-gray-600 italic">Proyecto: Python para APIs e IA — Fase 1 (Santiado de Cali)</p>
+            <div class="mt-4 flex justify-center gap-4">
+                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium shadow-sm">API: Conectada</span>
+                <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium shadow-sm">Dataset: PIII 2023</span>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <div class="lg:col-span-1 space-y-6">
+                <div class="glass-card p-6 rounded-2xl shadow-xl">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Resumen de Datos</h2>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
+                            <span class="text-gray-500">Ciudad</span>
+                            <span class="font-bold text-pink-600">Cali, Valle</span>
+                        </div>
+                        <div id="loading-status" class="text-sm text-center py-2 text-pink-500 animate-pulse">
+                            Sincronizando con FastAPI...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2">
+                <div class="glass-card p-6 rounded-2xl shadow-xl">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-semibold text-gray-800">Distribución por Comunas</h2>
+                        <button onclick="fetchData()" class="text-pink-600 hover:text-pink-800 text-sm font-medium">Actualizar datos</button>
+                    </div>
+                    <div class="relative h-[400px]">
+                        <canvas id="mainChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <footer class="mt-12 text-center text-gray-400 text-sm">
+            Fase 1: Entorno reproducible, Pydantic y FastAPI.
+        </footer>
+    </div>
+
+    <script>
+        let myChart;
+
+        async function fetchData() {
+            const statusLabel = document.getElementById('loading-status');
+            try {
+                // LLAMADA A TU API (Asegúrate que uvicorn esté corriendo)
+                const response = await fetch('http://127.0.0.1:8000/api/v1/stats');
+                const data = await response.json();
+
+                if (data.error) throw new Error(data.error);
+
+                statusLabel.innerText = "✅ Datos actualizados";
+                statusLabel.classList.remove('animate-pulse', 'text-pink-500');
+                statusLabel.classList.add('text-green-600');
+
+                renderChart(data);
+            } catch (error) {
+                statusLabel.innerText = "❌ Error: API no detectada";
+                statusLabel.classList.add('text-red-600');
+                console.error("Error al conectar con el repositorio:", error);
+            }
+        }
+
+        function renderChart(data) {
+            const ctx = document.getElementById('mainChart').getContext('2d');
+            
+            // Si el gráfico ya existe, lo destruimos para actualizarlo
+            if (myChart) { myChart.destroy(); }
+
+            myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(d => `Comuna ${d.comuna}`),
+                    datasets: [{
+                        label: 'Número de Casos',
+                        data: data.map(d => d.cantidad),
+                        backgroundColor: 'rgba(219, 39, 119, 0.7)',
+                        borderColor: 'rgba(219, 39, 119, 1)',
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        hoverBackgroundColor: 'rgba(219, 39, 119, 0.9)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { 
+                            beginAtZero: true,
+                            grid: { color: 'rgba(0,0,0,0.05)' }
+                        },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        // Ejecutar carga inicial
+        fetchData();
+    </script>
+</body>
+</html>
