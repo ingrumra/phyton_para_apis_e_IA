@@ -2,8 +2,8 @@ from typing import List
 import pandas as pd
 from fastapi import APIRouter
 
-from app.core.schemas import CancerMamaIn, CancerMamaOut
-from app.core.cleaning import clean_dataframe, profile_missing
+from ..core.schemas import CancerMamaIn, CancerMamaOut
+from ..core.cleaning import clean_dataframe, profile_missing
 
 router = APIRouter()
 

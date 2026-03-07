@@ -1,6 +1,6 @@
 
 from fastapi import APIRouter
-from app.core.schemas import CancerMamaIn, CancerMamaOut
+from ..core.schemas import CancerMamaIn, CancerMamaOut
 
 router = APIRouter()
 

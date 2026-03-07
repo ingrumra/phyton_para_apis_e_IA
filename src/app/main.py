@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 
-from app.api.routes_health import router as health_router
-from app.api.routes_clean import router as clean_router
-from app.api.routes_schema_demo import router as schema_router
-from app.api.routes_stats import router as stats_router
+from .api.routes_health import router as health_router
+from .api.routes_clean import router as clean_router
+from .api.routes_schema_demo import router as schema_router
+from .api.routes_stats import router as stats_router
 
 app = FastAPI(title="Python para APIs e IA", version="0.1.0")
 
