@@ -26,7 +26,7 @@ class CustomHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
 
 def start_api_server() -> subprocess.Popen:
     """Arranca el servidor FastAPI (uvicorn) en 127.0.0.1:8000 en un
-proceso separado."
+proceso separado."""
     # usamos el intérprete actual para que se respete el entorno virtual
     cmd = [sys.executable, "-m", "uvicorn", "src.app.main:app", "--reload"]
     print("⚙️  Iniciando API FastAPI en http://127.0.0.1:8000 (uvicorn)")
