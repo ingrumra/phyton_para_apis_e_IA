@@ -64,11 +64,12 @@
                     <h1 class="text-xl font-bold text-gray-900">🐍 Python APIs e IA</h1>
                 </div>
                 <div class="flex items-center space-x-4">
+                    <a href="#vision" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">Visión</a>
                     <a href="#pipeline" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">Pipeline</a>
                     <a href="#arquitectura" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">Arquitectura</a>
-                    <a href="#modulos" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">Módulos</a>
+                    <a href="#modulos-detail" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">Módulos</a>
+                    <a href="#flujo-upload" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">Flujo</a>
                     <a href="#dashboard" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">Dashboard</a>
-                    <a href="#codigo" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">Código</a>
                 </div>
             </div>
         </div>
@@ -91,8 +92,177 @@
             </div>
         </section>
 
-        <!-- Pipeline -->
-        <section id="pipeline" class="mb-16">
+        <!-- Visión General -->
+        <section id="vision" class="mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">📖 Visión General del Proyecto</h2>
+            <div class="glass-card p-8 rounded-2xl">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">¿Qué hemos construido?</h3>
+                <p class="text-gray-700 mb-4">Un **pipeline completo de datos** que integra limpieza automática, validación estricta y una API REST escalable. Los datos de cáncer de mama (PIII 2023) fluyen a través de múltiples capas:</p>
+                <ol class="list-decimal list-inside space-y-3 text-sm text-gray-700 mb-6">
+                    <li><strong>Raw CSV</strong> → Se sube desde el navegador</li>
+                    <li><strong>Lectura inteligente</strong> → Pandas infiere el delimitador (`;` o `,`)</li>
+                    <li><strong>Limpieza de datos</strong> → Normalización, formateo de fechas españolas, conversión numérica</li>
+                    <li><strong>Validación Pydantic</strong> → Verificación de tipos y esquemas</li>
+                    <li><strong>API REST</strong> → Endpoints versionados bajo `/api/v1`</li>
+                    <li><strong>Dashboard HTML/JS</strong> → Visualización de estadísticas y gráficos interactivos</li>
+                </ol>
+                <div class="bg-blue-50 border-l-4 border-blue-600 p-4 rounded text-sm text-blue-800 mb-4">
+                    <p><strong>Flujo de Servidor:</strong> `serve_dashboard.py` lanza automáticamente FastAPI (uvicorn) en 8000 + el frontend estático en 8080, ambos con CORS activado.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Módulos Detallado -->
+        <section id="modulos-detail" class="mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">🏗️ Estructura de Módulos y Funciones</h2>
+            <div class="space-y-6">
+                <!-- cleaning.py -->
+                <div class="glass-card p-6 rounded-2xl">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">📦 `src/app/core/cleaning.py`</h3>
+                    <p class="text-sm text-gray-600 mb-3">Funciones puras de limpieza y transformación de datos usando pandas.</p>
+                    <ul class="text-xs text-gray-700 space-y-2 ml-4">
+                        <li><code>load_raw_csv(path)</code> → Carga CSV con separador `;` usando motor 'python'</li>
+                        <li><code>drop_fully_empty_columns(df)</code> → Elimina columnas 100% vacías (ej: Unnamed)</li>
+                        <li><code>normalize_column_names(df)</code> → Convierte a minúsculas, quita espacios y underscores</li>
+                        <li><code>parse_spanish_date(value)</code> → Convierte fechas españolas (ej: "3-ene-2023") a `datetime.date`</li>
+                        <li><code>profile_missing(df)</code> → Cuenta NaN/None por columna (útil para reportes)</li>
+                        <li><code>clean_dataframe(df)</code> → **Orquesta todas las funciones** anteriores en un pipeline limpio</li>
+                    </ul>
+                </div>
+
+                <!-- schemas.py -->
+                <div class="glass-card p-6 rounded-2xl">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">📋 `src/app/core/schemas.py`</h3>
+                    <p class="text-sm text-gray-600 mb-3">Modelos Pydantic para validación de entrada/salida.</p>
+                    <ul class="text-xs text-gray-700 space-y-2 ml-4">
+                        <li><code>CancerMamaIn</code> → Valida datos de entrada (edad ≥ 0, descripción, fechas, etc.)</li>
+                        <li><code>CancerMamaOut</code> → Define la respuesta tipada después de la limpieza</li>
+                        <li>Ambos garantizan que solo datos válidos entren y salgan de la API</li>
+                    </ul>
+                </div>
+
+                <!-- routes -->
+                <div class="glass-card p-6 rounded-2xl">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">🛣️ Endpoints de la API (`/src/app/api/`)</h3>
+                    <div class="space-y-3 text-xs text-gray-700">
+                        <div class="bg-gray-50 p-3 rounded">
+                            <code class="text-green-700">GET /api/v1/health</code>
+                            <p>Verifica que el servidor esté corriendo. Respuesta: `{"status": "ok"}`</p>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded">
+                            <code class="text-blue-700">POST /api/v1/clean</code>
+                            <p>Recibe array JSON de registros, los limpia y devuelve: `{ n, missing, records, columns }`</p>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded">
+                            <code class="text-purple-700">POST /api/v1/validate</code>
+                            <p>Valida un registro individual con Pydantic. Error 422 si es inválido.</p>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded">
+                            <code class="text-orange-700">POST /api/v1/clean-file</code>
+                            <p><strong>[PRINCIPAL]</strong> Sube un CSV, lo lee con delimitador inferido, lo limpia y devuelve registros + estadísticas (valores únicos por columna)</p>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded">
+                            <code class="text-indigo-700">GET /api/v1/stats</code>
+                            <p>Retorna estadísticas por comuna/zona (lista de `{ comuna, cantidad }`). Datos estáticos para demo.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Flujo de Upload -->
+        <section id="flujo-upload" class="mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">📤 Flujo Completo: Subir y Procesar un CSV</h2>
+            <div class="glass-card p-6 rounded-2xl">
+                <div class="space-y-4 text-sm">
+                    <div class="flex items-start gap-4">
+                        <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center flex-shrink-0 font-bold">1</div>
+                        <div>
+                            <p class="font-semibold text-gray-800">Usuario selecciona archivo CSV</p>
+                            <p class="text-gray-600">En el dashboard, input `type="file" accept=".csv"` detecta el cambio</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center flex-shrink-0 font-bold">2</div>
+                        <div>
+                            <p class="font-semibold text-gray-800">Frontend envía `POST /api/v1/clean-file`</p>
+                            <p class="text-gray-600">JavaScript crea un `FormData`, adjunta el archivo y hace fetch multipart</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center flex-shrink-0 font-bold">3</div>
+                        <div>
+                            <p class="font-semibold text-gray-800">FastAPI recibe el CSV</p>
+                            <p class="text-gray-600">`UploadFile` permite leer el contenido. El servidor hace `file.file.seek(0)` para reiniciar el puntero.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center flex-shrink-0 font-bold">4</div>
+                        <div>
+                            <p class="font-semibold text-gray-800">Pandas lee con delimitador inferido</p>
+                            <p class="text-gray-600">`pd.read_csv(file.file, sep=None, engine="python")` automáticamente detecta `;`, `,`, tab, etc.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center flex-shrink-0 font-bold">5</div>
+                        <div>
+                            <p class="font-semibold text-gray-800">Pipeline de limpieza ejecuta en orden</p>
+                            <p class="text-gray-600">Elimina columnas vacías → normaliza nombres → parsea fechas españolas → convierte nums → valida esquema</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center flex-shrink-0 font-bold">6</div>
+                        <div>
+                            <p class="font-semibold text-gray-800">Respuesta JSON con estadísticas</p>
+                            <p class="text-gray-600">{ records: [...], columns: [...], stats: {col: nunique} } llega al navegador sin errores</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center flex-shrink-0 font-bold">7</div>
+                        <div>
+                            <p class="font-semibold text-gray-800">Dashboard se actualiza</p>
+                            <p class="text-gray-600">JavaScript procesa los datos, recarga el gráfico, muestra ✅ "Archivo procesado exitosamente"</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tecnologías -->
+        <section id="tecnologias" class="mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">🛠️ Tecnologías y Stack</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="glass-card p-6 rounded-2xl">
+                    <h4 class="font-semibold text-gray-800 mb-2">Backend</h4>
+                    <ul class="text-xs text-gray-700 space-y-1">
+                        <li>🚀 <strong>FastAPI</strong> – framework moderno, validación automática</li>
+                        <li>✅ <strong>Pydantic</strong> – validación de datos y serialización</li>
+                        <li>🐼 <strong>Pandas</strong> – manipulación y limpieza de datos</li>
+                        <li>🧪 <strong>pytest</strong> – testing automático</li>
+                    </ul>
+                </div>
+                <div class="glass-card p-6 rounded-2xl">
+                    <h4 class="font-semibold text-gray-800 mb-2">Infraestructura</h4>
+                    <ul class="text-xs text-gray-700 space-y-1">
+                        <li>⚙️ <strong>uvicorn</strong> – servidor ASGI para FastAPI</li>
+                        <li>🌐 <strong>HTTP Server</strong> – sirve HTML estático con CORS</li>
+                        <li>📁 <strong>FormData API</strong> – multipart file upload</li>
+                        <li>🔄 <strong>Python subprocess</strong> – auto-launch de servicios</li>
+                    </ul>
+                </div>
+                <div class="glass-card p-6 rounded-2xl">
+                    <h4 class="font-semibold text-gray-800 mb-2">Frontend</h4>
+                    <ul class="text-xs text-gray-700 space-y-1">
+                        <li>📊 <strong>Chart.js</strong> – gráficos interactivos</li>
+                        <li>🎨 <strong>Tailwind CSS</strong> – estilos responsivos</li>
+                        <li>⚡ <strong>Vanilla JS</strong> – sin frameworks, fetch API</li>
+                        <li>📱 <strong>HTML5</strong> – semántica moderna</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+                <section id="pipeline" class="mb-16">
             <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">🔄 Pipeline de Limpieza de Datos</h2>
             <div class="glass-card p-6 rounded-2xl mb-8">
                 <h3 class="text-xl font-semibold text-gray-800 mb-4">📋 Resumen del Proceso</h3>
@@ -127,31 +297,24 @@
             </div>
         </section>
 
-        <!-- Módulos -->
+        <!-- Módulos (Resumen) -->
         <section id="modulos" class="mb-16">
-            <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">📚 Módulos y Tecnologías</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="glass-card p-6 rounded-2xl">
-                    <h3 class="font-semibold text-gray-800">cleaning.py</h3>
-                    <p class="text-xs text-gray-600">Lógica de limpieza de datos</p>
+            <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">📚 Guía Interactiva del Proyecto</h2>
+            <div class="glass-card p-6 rounded-2xl mb-8">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Explora los componentes del sistema:</h3>
+                <p class="text-sm text-gray-600 mb-6">Presiona los botones abajo para ver simulaciones de cómo funcionan la limpieza de datos, la validación con Pydantic y los endpoints de la API.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button onclick="simulateCleaning()" class="bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition">Simular Limpieza</button>
+                    <button onclick="testValidation()" class="bg-purple-600 text-white px-4 py-3 rounded-lg hover:bg-purple-700 transition">Validar Pydantic</button>
+                    <button onclick="showApiDemo()" class="bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition">API Demo</button>
                 </div>
-                <div class="glass-card p-6 rounded-2xl">
-                    <h3 class="font-semibold text-gray-800">models.py</h3>
-                    <p class="text-xs text-gray-600">Esquemas Pydantic</p>
-                </div>
-                <div class="glass-card p-6 rounded-2xl">
-                    <h3 class="font-semibold text-gray-800">routes.py</h3>
-                    <p class="text-xs text-gray-600">Endpoints FastAPI</p>
+                <div id="demo-result" class="mt-6 p-4 bg-gray-50 rounded-lg border-l-4 border-indigo-600 hidden">
+                    <p class="font-semibold text-gray-800 mb-2">Resultado:</p>
+                    <div id="demo-content" class="text-sm text-gray-700"></div>
                 </div>
             </div>
-            <div class="glass-card p-6 rounded-2xl mt-8">
-                <h3 class="text-xl font-semibold text-gray-800 mb-6 text-center">🎮 Demonstraciones Interactivas</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <button onclick="simulateCleaning()" class="bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700">🔄 Simular Limpieza</button>
-                    <button onclick="testValidation()" class="bg-purple-600 text-white px-4 py-3 rounded-lg hover:bg-purple-700">✅ Validar Pydantic</button>
-                    <button onclick="showApiDemo()" class="bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700">🚀 API Demo</button>
-                </div>
-                <div id="demo-result" class="mt-6 p-4 bg-gray-50 rounded-lg hidden"></div>
+            <div class="bg-yellow-50 border-l-4 border-yellow-600 p-4 rounded text-sm text-yellow-800 mb-8">
+                <p><strong>📖 Más detalles:</strong> Consulta la sección <a href="#modulos-detail" class="underline text-yellow-700 hover:text-yellow-900">"Estructura de Módulos"</a> para ver todas las funciones, esquemas y endpoints disponibles.</p>
             </div>
         </section>
 
@@ -377,42 +540,84 @@
 
         function simulateCleaning() {
             const demoResult = document.getElementById('demo-result');
-            demoResult.innerHTML = `
-                <p><strong>Simulando limpieza...</strong></p>
-                <p class="text-xs mt-2">1. Cargadas 1,247 filas ✓</p>
-                <p class="text-xs">2. Eliminadas 58 filas con duplicados ✓</p>
-                <p class="text-xs">3. Normalizadas 1,189 filas ✓</p>
-                <p class="text-xs text-green-600 font-semibold mt-2">Resultado: 95.3% limpieza</p>
+            const demoContent = document.getElementById('demo-content');
+            demoContent.innerHTML = `
+                <p class="font-mono text-xs mb-3 bg-white p-2 rounded">cleaning.dataframe(df)</p>
+                <ul class="space-y-1">
+                    <li>✓ Eliminadas 12 columnas completamente vacías (Unnamed)</li>
+                    <li>✓ Normalizados nombres: "Edad " → "edad", "Fec_Not" → "fec_not"</li>
+                    <li>✓ Parseadas fechas españolas: "3-ene-2023" → date(2023, 1, 3)</li>
+                    <li>✓ Convertidos campos numéricos: "55" → 55, "1.05" → 1.05</li>
+                    <li>✓ Validados registros contra esquema CancerMamaIn</li>
+                </ul>
+                <p class="text-green-700 font-semibold mt-3">→ 1,189/1,247 registros procesados (95.3%)</p>
             `;
             demoResult.classList.remove('hidden');
         }
 
         function testValidation() {
             const demoResult = document.getElementById('demo-result');
-            demoResult.innerHTML = `
-                <p><strong>Validación Pydantic:</strong></p>
-                <p class="text-xs mt-2">✓ CancerMamaIn schema validado</p>
-                <p class="text-xs">✓ Tipos de datos confirmados</p>
-                <p class="text-xs">✓ Fechas parseadas correctamente</p>
-                <p class="text-xs text-green-600 font-semibold mt-2">Todos los registros válidos</p>
+            const demoContent = document.getElementById('demo-content');
+            demoContent.innerHTML = `
+                <p class="font-mono text-xs mb-3 bg-white p-2 rounded">POST /api/v1/validate</p>
+                <p class="text-xs mb-2"><strong>Input (Raw JSON):</strong></p>
+                <p class="font-mono bg-white p-2 rounded text-xs mb-3">{ "edad": 55, "ciudad": "cali", "dpto": "valle" }</p>
+                <p class="text-xs mb-2"><strong>Validación Pydantic:</strong></p>
+                <ul class="space-y-1 text-xs">
+                    <li>✓ edad: int (55 ≥ 0) válido</li>
+                    <li>✓ ciudad: str → normalizado a "cali"</li>
+                    <li>✓ dpto: str → normalizado a "valle"</li>
+                    <li>✓ Ningún campo falta (required)</li>
+                </ul>
+                <p class="text-green-700 font-semibold mt-3">→ 200 OK | Esquema CancerMamaOut devuelto</p>
             `;
             demoResult.classList.remove('hidden');
         }
 
         function showApiDemo() {
             const demoResult = document.getElementById('demo-result');
-            demoResult.innerHTML = `
-                <p><strong>Demo API FastAPI:</strong></p>
-                <p class="text-xs mt-2">GET /api/v1/health → 200 OK</p>
-                <p class="text-xs">GET /api/v1/stats → 5 registros</p>
-                <p class="text-xs">POST /api/v1/clean-file → Procesando...</p>
-                <p class="text-xs text-green-600 font-semibold mt-2">APIs funcionando correctamente</p>
+            const demoContent = document.getElementById('demo-content');
+            demoContent.innerHTML = `
+                <p class="font-semibold mb-3">Endpoints Disponibles (/api/v1):</p>
+                <div class="space-y-2 text-xs">
+                    <div class="bg-white p-2 rounded border-l-4 border-green-600">
+                        <p class="font-mono">GET /health</p>
+                        <p class="text-gray-600">Estado del servidor → {"status": "ok"}</p>
+                    </div>
+                    <div class="bg-white p-2 rounded border-l-4 border-blue-600">
+                        <p class="font-mono">POST /clean</p>
+                        <p class="text-gray-600">Limpia array JSON → {records, columns, missing, n}</p>
+                    </div>
+                    <div class="bg-white p-2 rounded border-l-4 border-purple-600">
+                        <p class="font-mono">POST /validate</p>
+                        <p class="text-gray-600">Valida 1 registro → 200 OK o 422 Validation Error</p>
+                    </div>
+                    <div class="bg-white p-2 rounded border-l-4 border-orange-600">
+                        <p class="font-mono">POST /clean-file</p>
+                        <p class="text-gray-600">Multipart CSV upload → limpia + retorna datos + stats</p>
+                    </div>
+                    <div class="bg-white p-2 rounded border-l-4 border-indigo-600">
+                        <p class="font-mono">GET /stats</p>
+                        <p class="text-gray-600">Estadísticas por comuna → [{"comuna", "cantidad"}]</p>
+                    </div>
+                </div>
+                <p class="text-green-700 font-semibold mt-3">→ Todos operativos en http://127.0.0.1:8000</p>
             `;
             demoResult.classList.remove('hidden');
         }
 
         function showDataExample() {
-            alert('Ejemplo de transformación: Raw Data → Cleaned Data\nVerifica la consola para más detalles.');
+            const demoResult = document.getElementById('demo-result');
+            const demoContent = document.getElementById('demo-content');
+            demoContent.innerHTML = `
+                <p class="font-semibold mb-2">Ejemplo: Transformación de Datos</p>
+                <p class="text-xs mb-2 font-mono bg-white p-2 rounded"><strong>Raw Input:</strong></p>
+                <p class="text-xs font-mono mb-3">{ "Edad": "-5", "Fec_Not": "3-ene-2023", "Ciudad": "CALI " }</p>
+                <p class="text-xs mb-2 font-mono bg-white p-2 rounded"><strong>After clean_dataframe():</strong></p>
+                <p class="text-xs font-mono mb-3">{ "edad": -5, "fec_not": date(2023, 1, 3), "ciudad": "cali" }</p>
+                <p class="text-green-700 font-semibold text-xs">→ Normalizado, parseado y listo para analytics</p>
+            `;
+            demoResult.classList.remove('hidden');
         }
 
         document.addEventListener('DOMContentLoaded', () => {
