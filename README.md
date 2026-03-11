@@ -35,3 +35,12 @@ El CSV usa separador `;`, por eso la carga se hace con `read_csv(sep=";")`. :con
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
+2) Instalar dependencias:
+```powershell
+pip install -r requirements.txt
+```
+
+3) Levantar dashboard y API simultaneamente:
+```powershell
+python serve_dashboard.py
+```
