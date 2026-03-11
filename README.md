@@ -39,6 +39,26 @@ El CSV usa separador `;`, por eso la carga se hace con `read_csv(sep=";")`. :con
 - `tests/` → pruebas automatizadas (pytest)
 - `data/raw/` y `data/processed/` → rutas para datos crudos y procesados, no versionados en GitHub por buenas prácticas.
 
+## Estructura general del repositorio
+
+```text
+phyton_para_apis_e_IA/
+├── data/
+│   ├── raw/
+│   └── processed/
+├── legacy_flask/
+├── scripts/
+├── src/
+│   ├── app/
+│   │   ├── api/
+│   │   ├── core/
+│   │   └── main.py
+├── tests/
+├── index.html
+├── serve_dashboard.py
+├── requirements.txt
+└── README.md
+
 ## Exploración y limpieza de datos
 
 El proyecto parte de un archivo CSV crudo que se carga usando pandas. A partir de allí, se implementan funciones orientadas a resolver problemas frecuentes de calidad de datos: eliminación de columnas totalmente vacías, normalización de nombres de columnas, tipificación de variables numéricas y transformación de fechas en formato español. También se incorpora un perfil básico de valores faltantes por columna.
