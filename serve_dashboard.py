@@ -29,7 +29,7 @@ def start_api_server() -> subprocess.Popen:
 proceso separado."""
     # usamos el intérprete actual para que se respete el entorno virtual
     cmd = [sys.executable, "-m", "uvicorn", "src.app.main:app", "--reload"]
-    print("⚙️  Iniciando API FastAPI en http://127.0.0.1:8000 (uvicorn)")
+    print("Iniciando API FastAPI en http://127.0.0.1:8000 (uvicorn)")
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     return proc
 
