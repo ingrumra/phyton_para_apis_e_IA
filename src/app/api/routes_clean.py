@@ -1,12 +1,9 @@
 from typing import List
 import pandas as pd
-from fastapi import APIRouter
+from fastapi import APIRouter, UploadFile, File
 
 from ..core.schemas import CancerMamaIn, CancerMamaOut
 from ..core.cleaning import clean_dataframe, profile_missing
-
-from fastapi import UploadFile, File
-import pandas as pd
 
 router = APIRouter()
 
