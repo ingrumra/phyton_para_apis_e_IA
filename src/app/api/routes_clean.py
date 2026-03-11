@@ -12,10 +12,19 @@ router = APIRouter()
 
 @router.post("/clean", response_model=dict)
 async def clean_records(payload: List[dict]):
-    """Limpia un listado de registros enviado en el body"""
+    """Limpia un listado de registros enviado en el body.
+
+    Conserva compatibilidad con el esquema de pruebas: devolvemos
+    número total (`n`), `missing` por columna, plus registros/columns.
+    """
     df = pd.DataFrame(payload)
     cleaned = clean_dataframe(df)
-    return {"records": cleaned.to_dict(orient="records"), "columns": list(cleaned.columns)}
+    return {
+        "n": len(cleaned),
+        "missing": profile_missing(cleaned),
+        "records": cleaned.to_dict(orient="records"),
+        "columns": list(cleaned.columns),
+    }
 
 
 @router.post("/clean-file")
