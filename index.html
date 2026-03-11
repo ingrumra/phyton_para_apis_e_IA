@@ -139,7 +139,8 @@
             <!-- file upload button -->
             <div class="mb-6 text-center">
                 <input type="file" id="file-input" accept=".csv" class="mb-2" />
-                <p class="text-xs text-gray-500">El backend debe exponer un endpoint POST /clean que reciba el archivo y devuelva JSON limpio. Modifica <code>routes_clean.py</code> para procesar form-data.</p>
+                <p class="text-xs text-gray-500">Selecciona un CSV y se limpiará automáticamente (POST <code>/clean-file</code>). Ajusta <code>routes_clean.py</code> si necesitas cambiar el endpoint.</p>
+                <div id="upload-result" class="mt-4 text-sm text-gray-700"></div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                 <!-- stats cards omitted -->
@@ -164,6 +165,18 @@
 
     <script>
         // JavaScript from previous version with darker colors and column footers
+        // utility to show transient error message
+        function showError(msg) {
+            let errEl = document.getElementById('error-msg');
+            if (!errEl) {
+                errEl = document.createElement('div');
+                errEl.id = 'error-msg';
+                errEl.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-100 text-red-700 px-4 py-2 rounded shadow';
+                document.body.appendChild(errEl);
+            }
+            errEl.innerText = msg;
+            setTimeout(() => { errEl.innerText = ''; }, 5000);
+        }
         let barChart, pieChart;
         let currentData = [];
         const API_URL = 'http://127.0.0.1:8000/api/v1/stats';
@@ -224,7 +237,7 @@ const colors=['#111827','#1f2937','#374151','#4b5563','#6b7280','#9ca3af','#d1d5
         }
 
         // ... remaining JS (table render, errors, demo functions, upload handler) ...
-        async async function uploadFile(file){
+        async function uploadFile(file){
             const form=new FormData();
             form.append('file', file);
             const res = await fetch('/clean-file', { method: 'POST', body: form });
@@ -256,12 +269,15 @@ const colors=['#111827','#1f2937','#374151','#4b5563','#6b7280','#9ca3af','#d1d5
             } catch (err) {
                 console.error(err);
                 showError('Error subiendo archivo');
+            } finally {
+                // reset input so selecting same file again will trigger change
+                e.target.value = '';
             }
         });
 
         function displayPreview(records, columns) {
-            const demoContent = document.getElementById('demo-content');
-            demoContent.innerHTML = `<h5 class="font-semibold">Vista previa (${columns.length} columnas)</h5>`;
+            const container = document.getElementById('upload-result');
+            container.innerHTML = `<h5 class="font-semibold">Vista previa (${columns.length} columnas, ${records.length} filas)</h5>`;
             const table = document.createElement('table');
             table.className = 'w-full text-xs';
             const thead = document.createElement('thead');
@@ -274,8 +290,7 @@ const colors=['#111827','#1f2937','#374151','#4b5563','#6b7280','#9ca3af','#d1d5
                 tbody.appendChild(tr);
             });
             table.appendChild(tbody);
-            demoContent.appendChild(table);
-            document.getElementById('demo-result').classList.remove('hidden');
+            container.appendChild(table);
         }
 
         function updateCustomChart(data, columnName) {
