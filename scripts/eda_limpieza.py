@@ -1,6 +1,8 @@
 
+
+
 import pandas as pd
-from app.core.cleaning import load_raw_csv, clean_dataframe, profile_missing
+from src.app.core.cleaning import load_raw_csv, clean_dataframe, profile_missing
 
 RAW = "data/raw/cancer_mama_piii_2023_raw.csv"
 OUT = "data/processed/cancer_mama_piii_2023_clean.csv"
