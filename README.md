@@ -8,6 +8,7 @@ Este repositorio implementa la **Fase 1 (Semanas 1–4)** del curso: entorno rep
 - **Semana 1:** Pipeline de limpieza con **Pandas** y funciones puras (módulo `cleaning.py`), + script de EDA que genera un CSV limpio.   
 - **Semana 2:** **Esquemas Pydantic** (Input/Output) y endpoint de demostración `POST /validate` (validación y tipado)  
 - **Semana 3:** Mini-app **Flask** con endpoints `GET /health`, `POST /echo`, `POST /clean` usando la misma lógica de limpieza.   
+- **Semana 4:** Migración a FastAPI con versionado bajo `/api/v1` (por ejemplo `GET /api/v1/health`, `POST /api/v1/clean`, etc.).
 -(ASGI) con `/docs` y endpoints tipados; se prepara la migración de lógica de limpieza hacia FastAPI y validación estricta c  
 
 ## Dataset

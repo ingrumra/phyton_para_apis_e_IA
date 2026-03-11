@@ -17,11 +17,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# rutas básicas
-app.include_router(health_router, tags=["health"])
-app.include_router(schema_router, tags=["week2"])
-app.include_router(clean_router, tags=["clean"])
-app.include_router(stats_router)
+# rutas básicas (versionadas)
+app.include_router(health_router, prefix="/api/v1", tags=["health"])
+app.include_router(schema_router, prefix="/api/v1", tags=["week2"])
+app.include_router(clean_router, prefix="/api/v1", tags=["clean"])
+app.include_router(stats_router)  # ya define su propio prefix en el router
 
 @app.get("/")
 def root():

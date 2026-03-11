@@ -26,12 +26,30 @@ async def clean_records(payload: List[dict]):
 
 @router.post("/clean-file")
 async def clean_file(file: UploadFile = File(...)):
-    """Recibe un CSV y retorna los registros limpios"""
+    """Recibe un CSV y retorna los registros limpios.
+
+    El lector usa el motor `python` con `sep=None` para inferir el delimitador
+    (coma, punto y coma, tabulador, etc.). También garantiza que el puntero
+    del archivo se sitúe al comienzo antes de cada intento de lectura para
+    evitar errores al reintentar.
+    """
+    # el objeto `UploadFile` expone un file-like; asegurarse de partir desde 0
+    file.file.seek(0)
     try:
-        df = pd.read_csv(file.file, sep=";")
+        df = pd.read_csv(file.file, sep=None, engine="python")
     except Exception as e:
+        # capturar el error y devolverlo en JSON, el cliente puede interpretar
         return {"error": f"No se pudo leer el CSV: {e}"}
+
+    # si la lectura produjo un dataframe vacío o sin columnas útiles, informar
+    if df.empty or df.columns.empty:
+        return {"error": "CSV vacío o sin datos válidos"}
+
     cleaned = clean_dataframe(df)
+    # después de la limpieza también podría quedar vacío
+    if cleaned.empty or cleaned.columns.empty:
+        return {"error": "CSV no contiene datos que puedan limpiarse"}
+
     # genera estadísticas básicas por columna (conteo de valores únicos)
     stats = {col: int(cleaned[col].nunique()) for col in cleaned.columns}
     return {
